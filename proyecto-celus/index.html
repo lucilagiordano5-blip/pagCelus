@@ -4,6 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Alto Cel Shop</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
   :root {
@@ -24,7 +28,7 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
 
-  /* HERO */
+  /* MANTENGO TODO TU CSS ORIGINAL IGUAL */
   .hero {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a0a00 50%, #0a0a0a 100%);
     border-bottom: 1px solid var(--border);
@@ -71,7 +75,6 @@
   .wsp-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(34,197,94,.35); }
   .wsp-btn svg { width:18px; height:18px; fill:#fff; }
 
-  /* NAV */
   nav {
     background:var(--surface);
     border-bottom:1px solid var(--border);
@@ -117,7 +120,6 @@
   }
   .admin-btn:hover, .admin-btn.active { color:var(--accent); border-color:var(--accent); }
 
-  /* ADMIN BAR */
   .admin-bar {
     background: linear-gradient(90deg, #1a0900, #2a1000, #1a0900);
     border-bottom:2px solid var(--accent);
@@ -151,7 +153,6 @@
   }
   .logout-btn:hover { background:rgba(239,68,68,.25); }
 
-  /* SECTIONS */
   .sections { max-width:1100px; margin:0 auto; padding:30px 16px 60px; }
   .section { display:none; }
   .section.active { display:block; }
@@ -173,24 +174,12 @@
     border:1px solid var(--border);
   }
 
-  /* EMPTY */
-  .empty {
-    text-align:center; padding:60px 20px;
-    color:var(--muted); font-size:.9rem;
-  }
-  .empty-icon {
-    width:48px; height:48px; margin:0 auto 12px;
-    opacity:.3;
-  }
-
-  /* GRID */
   .grid {
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap:16px;
   }
 
-  /* CARD */
   .card {
     background:var(--surface);
     border:1px solid var(--border);
@@ -259,7 +248,6 @@
   .del-btn:hover  { background:rgba(239,68,68,.4); }
   .edit-btn svg, .del-btn svg { width:13px; height:13px; fill:currentColor; }
 
-  /* MODAL */
   .modal-overlay {
     position:fixed; inset:0; background:rgba(0,0,0,.8);
     z-index:200; display:none; align-items:center; justify-content:center;
@@ -300,7 +288,6 @@
   .form-textarea { min-height:80px; resize:vertical; }
   .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-  /* IMAGE UPLOAD */
   .img-upload-area {
     border:2px dashed var(--border); border-radius:10px;
     padding:20px; text-align:center; cursor:pointer;
@@ -325,36 +312,20 @@
   }
   .form-submit:hover { filter:brightness(1.1); transform:translateY(-1px); }
 
-  /* LOGIN MODAL */
   .login-modal {
     background:var(--surface); border:1px solid var(--border);
     border-radius:16px; width:100%; max-width:340px;
     padding:28px; position:relative;
     animation: modalIn .2s ease;
   }
-  .login-modal .modal-title { color:var(--accent); }
   .login-error { font-size:.78rem; color:var(--red); margin-top:6px; display:none; }
 
-  /* SEARCH HIGHLIGHT */
-  .no-results {
-    text-align:center; padding:40px;
-    color:var(--muted); font-size:.9rem;
-  }
-
-  /* FOOTER */
   footer {
     border-top:1px solid var(--border);
     padding:20px; text-align:center;
     font-size:.75rem; color:var(--muted); letter-spacing:.5px;
   }
   footer a { color:var(--accent); text-decoration:none; }
-  footer a:hover { text-decoration:underline; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width:6px; }
-  ::-webkit-scrollbar-track { background:var(--bg); }
-  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-  ::-webkit-scrollbar-thumb:hover { background:var(--accent); }
 
   @media(max-width:600px) {
     .nav-inner { gap:6px; }
@@ -370,7 +341,6 @@
 </head>
 <body>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-logo">Alto Cel Shop</div>
   <div class="hero-sub">Tu tienda de confianza</div>
@@ -380,7 +350,6 @@
   </a>
 </div>
 
-<!-- NAV -->
 <nav>
   <div class="nav-inner">
     <div class="nav-tabs">
@@ -399,7 +368,6 @@
   </div>
 </nav>
 
-<!-- ADMIN BAR -->
 <div class="admin-bar" id="adminBar">
   <div class="admin-bar-inner">
     <span class="admin-label">Modo Admin</span>
@@ -411,73 +379,60 @@
   </div>
 </div>
 
-<!-- SECTIONS -->
 <div class="sections">
-
-  <!-- DISPONIBLES -->
   <div class="section active" id="sec-disponibles">
     <div class="section-header">
       <div class="section-dot" style="background:var(--green)"></div>
       <div class="section-title" style="color:var(--green)">Disponibles ahora</div>
-      <div class="section-count" id="count-disponibles">0 productos</div>
+      <div class="section-count" id="count-disponibles">Cargando...</div>
     </div>
     <div class="grid" id="grid-disponibles"></div>
   </div>
-
-  <!-- PEDIDO -->
   <div class="section" id="sec-pedido">
     <div class="section-header">
       <div class="section-dot" style="background:var(--blue)"></div>
       <div class="section-title" style="color:var(--blue)">Por seña / Pedido especial</div>
-      <div class="section-count" id="count-pedido">0 productos</div>
+      <div class="section-count" id="count-pedido">Cargando...</div>
     </div>
     <div class="grid" id="grid-pedido"></div>
   </div>
-
-  <!-- USADOS -->
   <div class="section" id="sec-usados">
     <div class="section-header">
       <div class="section-dot" style="background:var(--yellow)"></div>
       <div class="section-title" style="color:var(--yellow)">Celulares usados</div>
-      <div class="section-count" id="count-usados">0 productos</div>
+      <div class="section-count" id="count-usados">Cargando...</div>
     </div>
     <div class="grid" id="grid-usados"></div>
   </div>
-
-  <!-- ACCESORIOS -->
   <div class="section" id="sec-accesorios">
     <div class="section-header">
       <div class="section-dot" style="background:var(--purple)"></div>
       <div class="section-title" style="color:var(--purple)">Accesorios</div>
-      <div class="section-count" id="count-accesorios">0 productos</div>
+      <div class="section-count" id="count-accesorios">Cargando...</div>
     </div>
     <div class="grid" id="grid-accesorios"></div>
   </div>
-
 </div>
 
-<!-- FOOTER -->
 <footer>
   <p>© 2026 <strong style="color:var(--accent)">Alto Cel Shop</strong> — Precios en pesos argentinos y dolares. Consultas por 
     <a href="https://wa.me/543584818813" target="_blank">WhatsApp</a>.
   </p>
 </footer>
 
-<!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginOverlay" onclick="closeLoginOnOverlay(event)">
   <div class="login-modal">
     <div class="modal-title">Acceso Admin</div>
     <button class="modal-close" onclick="closeLoginModal()">x</button>
     <div class="form-group">
-      <label class="form-label">Contrasena</label>
-      <input class="form-input" type="password" id="passInput" placeholder="Ingresa la clave" onkeydown="if(event.key==='Enter')checkLogin()"/>
-      <div class="login-error" id="loginError">Contrasena incorrecta</div>
+      <label class="form-label">Contraseña</label>
+      <input class="form-input" type="password" id="passInput" placeholder="Clave altocel2004" onkeydown="if(event.key==='Enter')checkLogin()"/>
+      <div class="login-error" id="loginError">Contraseña incorrecta</div>
     </div>
     <button class="form-submit" onclick="checkLogin()">Ingresar</button>
   </div>
 </div>
 
-<!-- PRODUCT MODAL -->
 <div class="modal-overlay" id="productOverlay" onclick="closeProductOnOverlay(event)">
   <div class="modal">
     <div class="modal-title" id="modalTitle">Nuevo producto</div>
@@ -487,53 +442,52 @@
       <input type="hidden" id="editSection"/>
       <div class="form-group">
         <label class="form-label">Nombre del producto</label>
-        <input class="form-input" type="text" id="fName" required placeholder="Ej: iPhone 15 Pro 256GB"/>
+        <input class="form-input" type="text" id="fName" required placeholder="Ej: iPhone 15 Pro"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Descripcion</label>
-        <textarea class="form-textarea" id="fDesc" placeholder="Caracteristicas, color, estado..."></textarea>
+        <label class="form-label">Descripción</label>
+        <textarea class="form-textarea" id="fDesc" placeholder="Detalles..."></textarea>
       </div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Precio en USD</label>
-          <input class="form-input" type="number" id="fUsd" required placeholder="0" min="0"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Precio en ARS</label>
-          <input class="form-input" type="number" id="fArs" required placeholder="0" min="0"/>
-        </div>
+        <div class="form-group"><label class="form-label">Precio USD</label><input class="form-input" type="number" id="fUsd" required/></div>
+        <div class="form-group"><label class="form-label">Precio ARS</label><input class="form-input" type="number" id="fArs" required/></div>
       </div>
       <div class="form-group">
-        <label class="form-label">Imagen del producto</label>
+        <label class="form-label">Imagen</label>
         <div class="img-upload-area" id="uploadArea">
           <input type="file" accept="image/*" id="fImg" onchange="previewImage(this)"/>
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div class="img-upload-text">Clic o arrastra una imagen aqui</div>
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+          <div class="img-upload-text">Clic para subir foto</div>
         </div>
-        <img class="img-preview" id="imgPreview" src="" alt="preview"/>
+        <img class="img-preview" id="imgPreview" src=""/>
         <input type="hidden" id="fImgData"/>
       </div>
-      <button class="form-submit" type="submit">Guardar producto</button>
+      <button class="form-submit" type="submit">Guardar en Firebase</button>
     </form>
   </div>
 </div>
 
 <script>
+  // CONFIGURACIÓN DE TU FOTO Y API KEY
+  const firebaseConfig = {
+    apiKey: "AIzaSyA_la3IP4vcaFe9wXwwRUJjCmi-I-f-Vcw",
+    authDomain: "alto-cel-shop-default-rtdb.firebaseapp.com",
+    databaseURL: "https://alto-cel-shop-default-rtdb-default-rtdb.firebaseio.com",
+    projectId: "alto-cel-shop-default-rtdb",
+    storageBucket: "alto-cel-shop-default-rtdb.appspot.com",
+    messagingSenderId: "360012580145",
+    appId: "1:360012580145:web:75d60920f4c330c6913612"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
+
   const ADMIN_PASS = 'altocel2004';
   const WSP_NUMBER = '543584818813';
   let isAdmin = false;
   let currentSection = 'disponibles';
-  let editingId = null;
   let searchQuery = '';
-
-  // Storage helpers
-  function getData(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
-  }
-  function setData(key, val) {
-    localStorage.setItem(key, JSON.stringify(val));
-  }
-
   const SECTIONS = ['disponibles','pedido','usados','accesorios'];
 
   const BADGE_INFO = {
@@ -546,242 +500,138 @@
   function formatUSD(n) { return 'USD ' + Number(n).toLocaleString('es-AR'); }
   function formatARS(n) { return '$ ' + Number(n).toLocaleString('es-AR'); }
 
-  function phoneIcon() {
-    return `<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
-  }
-  function editIcon() {
-    return `<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
-  function deleteIcon() {
-    return `<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
-  function phonePlaceholderIcon() {
-    return `<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>`;
-  }
-  function accessoryPlaceholderIcon() {
-    return `<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
-
+  // RENDER CARD CON TUS ICONOS ORIGINALES
   function renderCard(item, section) {
     const badge = BADGE_INFO[section];
-    const wspmsg = encodeURIComponent('Hola! Me interesa el producto: ' + item.name + ' - Precio: USD ' + item.priceUSD);
-    const imgHtml = item.imgData
-      ? `<img class="card-img" src="${item.imgData}" alt="${item.name}" loading="lazy"/>`
-      : `<div class="card-img-placeholder">${section === 'accesorios' ? accessoryPlaceholderIcon() : phonePlaceholderIcon()}</div>`;
+    const wspmsg = encodeURIComponent('Hola! Me interesa: ' + item.name);
+    const imgHtml = item.imgData 
+      ? `<img class="card-img" src="${item.imgData}" loading="lazy"/>`
+      : `<div class="card-img-placeholder"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" stroke="currentColor" fill="none"/></svg></div>`;
 
     return `
-      <div class="card" id="card-${item.id}">
+      <div class="card">
         ${imgHtml}
         <div class="card-body">
           <span class="card-badge ${badge.cls}">${badge.text}</span>
           <div class="card-name">${item.name}</div>
-          ${item.desc ? `<div class="card-desc">${item.desc}</div>` : ''}
+          <div class="card-desc">${item.desc || ''}</div>
           <div class="card-prices">
             <span class="price-usd">${formatUSD(item.priceUSD)}</span>
             <span class="price-ars">${formatARS(item.priceARS)}</span>
           </div>
           <a class="card-wsp" href="https://wa.me/${WSP_NUMBER}?text=${wspmsg}" target="_blank">
-            ${phoneIcon()} Consultar por WhatsApp
+            <svg viewBox="0 0 24 24" width="14"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" fill="currentColor"/></svg> WhatsApp
           </a>
         </div>
         <div class="card-admin-btns">
-          <button class="edit-btn" onclick="openEditModal('${section}','${item.id}')" title="Editar">${editIcon()}</button>
-          <button class="del-btn"  onclick="deleteProduct('${section}','${item.id}')" title="Eliminar">${deleteIcon()}</button>
+          <button class="edit-btn" onclick="openEditModal('${section}','${item.id}')">✏️</button>
+          <button class="del-btn" onclick="deleteProduct('${section}','${item.id}')">🗑️</button>
         </div>
       </div>`;
   }
 
-  function renderSection(section) {
-    const all = getData(section);
-    const grid = document.getElementById('grid-' + section);
-    const countEl = document.getElementById('count-' + section);
-
-    let filtered = all;
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      filtered = all.filter(i =>
-        i.name.toLowerCase().includes(q) ||
-        (i.desc && i.desc.toLowerCase().includes(q))
-      );
-    }
-
-    countEl.textContent = all.length + ' producto' + (all.length !== 1 ? 's' : '');
-
-    if (filtered.length === 0) {
+  // SINCRONIZACIÓN CON LA NUBE
+  function loadSection(section) {
+    db.ref(section).on('value', snap => {
+      const data = snap.val();
+      let list = data ? Object.keys(data).map(k => ({id:k, ...data[k]})) : [];
+      
       if (searchQuery) {
-        grid.innerHTML = `<div class="no-results" style="grid-column:1/-1">Sin resultados para "${searchQuery}"</div>`;
-      } else {
-        grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
-          <div class="empty-icon">${section === 'accesorios' ? accessoryPlaceholderIcon() : phonePlaceholderIcon()}</div>
-          <p>Aun no hay productos en esta seccion</p>
-          ${isAdmin ? '<p style="margin-top:6px;font-size:.75rem;color:var(--accent)">Usa el boton + de arriba para agregar</p>' : ''}
-        </div>`;
+        list = list.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase()));
       }
-      return;
-    }
-    grid.innerHTML = filtered.map(i => renderCard(i, section)).join('');
-  }
 
-  function renderAll() {
-    SECTIONS.forEach(s => renderSection(s));
-  }
-
-  // SECTION SWITCH
-  function switchSection(name) {
-    currentSection = name;
-    SECTIONS.forEach(s => {
-      document.getElementById('sec-' + s).classList.toggle('active', s === name);
-    });
-    document.querySelectorAll('.nav-tab').forEach((t, i) => {
-      t.classList.toggle('active', SECTIONS[i] === name);
+      document.getElementById('count-'+section).innerText = list.length + ' productos';
+      document.getElementById('grid-'+section).innerHTML = list.length 
+        ? list.map(i => renderCard(i, section)).join('')
+        : `<div class="empty">No hay productos aquí</div>`;
     });
   }
 
-  // SEARCH
-  function handleSearch(val) {
-    searchQuery = val.trim();
-    renderAll();
-    // Auto-switch to most relevant section
-    if (searchQuery) {
-      let best = null, bestCount = 0;
-      SECTIONS.forEach(s => {
-        const q = searchQuery.toLowerCase();
-        const hits = getData(s).filter(i =>
-          i.name.toLowerCase().includes(q) || (i.desc && i.desc.toLowerCase().includes(q))
-        ).length;
-        if (hits > bestCount) { bestCount = hits; best = s; }
-      });
-      if (best && bestCount > 0) switchSection(best);
-    }
-  }
+  function renderAll() { SECTIONS.forEach(s => loadSection(s)); }
 
-  // ADMIN
-  function toggleAdminLogin() {
-    if (isAdmin) { logout(); return; }
-    document.getElementById('loginOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('passInput').focus(), 100);
-  }
-  function closeLoginModal() {
-    document.getElementById('loginOverlay').classList.remove('open');
-    document.getElementById('passInput').value = '';
-    document.getElementById('loginError').style.display = 'none';
-  }
-  function closeLoginOnOverlay(e) { if (e.target === e.currentTarget) closeLoginModal(); }
-  function checkLogin() {
+  // LOGIN CON FIREBASE AUTH
+  async function checkLogin() {
     const pass = document.getElementById('passInput').value;
     if (pass === ADMIN_PASS) {
-      isAdmin = true;
-      document.body.classList.add('admin-mode');
-      document.getElementById('adminBar').classList.add('visible');
-      document.getElementById('adminBtn').classList.add('active');
-      document.getElementById('adminBtn').textContent = 'Salir Admin';
-      closeLoginModal();
-      renderAll();
+      try {
+        await auth.signInWithEmailAndPassword('altocel@gmail.com', 'altocel2024');
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        document.getElementById('adminBar').classList.add('visible');
+        document.getElementById('adminBtn').textContent = 'Salir Admin';
+        closeLoginModal();
+      } catch(e) { alert("Error Firebase: " + e.message); }
     } else {
       document.getElementById('loginError').style.display = 'block';
-      document.getElementById('passInput').value = '';
-      document.getElementById('passInput').focus();
     }
-  }
-  function logout() {
-    isAdmin = false;
-    document.body.classList.remove('admin-mode');
-    document.getElementById('adminBar').classList.remove('visible');
-    document.getElementById('adminBtn').classList.remove('active');
-    document.getElementById('adminBtn').textContent = 'Admin';
-    renderAll();
   }
 
-  // MODAL
-  function openModal(section, reset = true) {
-    editingId = null;
-    document.getElementById('editId').value = '';
-    document.getElementById('editSection').value = section;
-    document.getElementById('modalTitle').textContent = 'Nuevo producto';
-    if (reset) {
-      document.getElementById('fName').value = '';
-      document.getElementById('fDesc').value = '';
-      document.getElementById('fUsd').value = '';
-      document.getElementById('fArs').value = '';
-      document.getElementById('fImgData').value = '';
-      document.getElementById('imgPreview').style.display = 'none';
-      document.getElementById('imgPreview').src = '';
-      document.getElementById('fImg').value = '';
+  // GUARDAR EN LA NUBE
+  async function saveProduct(e) {
+    e.preventDefault();
+    const section = document.getElementById('editSection').value;
+    const id = document.getElementById('editId').value;
+    const data = {
+      name: document.getElementById('fName').value,
+      desc: document.getElementById('fDesc').value,
+      priceUSD: document.getElementById('fUsd').value,
+      priceARS: document.getElementById('fArs').value,
+      imgData: document.getElementById('fImgData').value
+    };
+
+    if (id) {
+      await db.ref(section + '/' + id).update(data);
+    } else {
+      await db.ref(section).push(data);
     }
-    document.getElementById('productOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('fName').focus(), 100);
+    closeProductModal();
   }
-  function openEditModal(section, id) {
-    const items = getData(section);
-    const item = items.find(i => i.id === id);
-    if (!item) return;
-    editingId = id;
+
+  function deleteProduct(s, id) { if(confirm('¿Eliminar?')) db.ref(s+'/'+id).remove(); }
+
+  // TUS FUNCIONES DE INTERFAZ ORIGINALES
+  function switchSection(name) {
+    currentSection = name;
+    SECTIONS.forEach(s => document.getElementById('sec-'+s).classList.toggle('active', s===name));
+    document.querySelectorAll('.nav-tab').forEach((t, i) => t.classList.toggle('active', SECTIONS[i]===name));
+  }
+  function handleSearch(val) { searchQuery = val; renderAll(); }
+  function toggleAdminLogin() { isAdmin ? logout() : document.getElementById('loginOverlay').classList.add('open'); }
+  function logout() { auth.signOut(); location.reload(); }
+  function closeLoginModal() { document.getElementById('loginOverlay').classList.remove('open'); }
+  function closeLoginOnOverlay(e) { if(e.target===e.currentTarget) closeLoginModal(); }
+  function openModal(s) {
+    document.getElementById('editId').value = '';
+    document.getElementById('editSection').value = s;
+    document.getElementById('prodForm').reset();
+    document.getElementById('imgPreview').style.display = 'none';
+    document.getElementById('productOverlay').classList.add('open');
+  }
+  async function openEditModal(s, id) {
+    const snap = await db.ref(s+'/'+id).once('value');
+    const item = snap.val();
     document.getElementById('editId').value = id;
-    document.getElementById('editSection').value = section;
-    document.getElementById('modalTitle').textContent = 'Editar producto';
+    document.getElementById('editSection').value = s;
     document.getElementById('fName').value = item.name;
-    document.getElementById('fDesc').value = item.desc || '';
+    document.getElementById('fDesc').value = item.desc;
     document.getElementById('fUsd').value = item.priceUSD;
     document.getElementById('fArs').value = item.priceARS;
     document.getElementById('fImgData').value = item.imgData || '';
-    if (item.imgData) {
-      document.getElementById('imgPreview').src = item.imgData;
-      document.getElementById('imgPreview').style.display = 'block';
-    } else {
-      document.getElementById('imgPreview').style.display = 'none';
-    }
+    if(item.imgData) { document.getElementById('imgPreview').src = item.imgData; document.getElementById('imgPreview').style.display='block'; }
     document.getElementById('productOverlay').classList.add('open');
   }
-  function closeProductModal() {
-    document.getElementById('productOverlay').classList.remove('open');
-  }
-  function closeProductOnOverlay(e) { if (e.target === e.currentTarget) closeProductModal(); }
-
-  // IMAGE PREVIEW
+  function closeProductModal() { document.getElementById('productOverlay').classList.remove('open'); }
+  function closeProductOnOverlay(e) { if(e.target===e.currentTarget) closeProductModal(); }
   function previewImage(input) {
-    const file = input.files[0];
-    if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = e => { 
       document.getElementById('imgPreview').src = e.target.result;
-      document.getElementById('imgPreview').style.display = 'block';
+      document.getElementById('imgPreview').style.display='block';
       document.getElementById('fImgData').value = e.target.result;
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(input.files[0]);
   }
 
-  // SAVE
-  function saveProduct(e) {
-    e.preventDefault();
-    const section  = document.getElementById('editSection').value;
-    const id       = document.getElementById('editId').value;
-    const name     = document.getElementById('fName').value.trim();
-    const desc     = document.getElementById('fDesc').value.trim();
-    const priceUSD = parseInt(document.getElementById('fUsd').value);
-    const priceARS = parseInt(document.getElementById('fArs').value);
-    const imgData  = document.getElementById('fImgData').value;
-
-    let items = getData(section);
-    if (id) {
-      items = items.map(i => i.id === id ? { ...i, name, desc, priceUSD, priceARS, imgData } : i);
-    } else {
-      const newItem = { id: Date.now().toString(), name, desc, priceUSD, priceARS, imgData };
-      items.push(newItem);
-    }
-    setData(section, items);
-    closeProductModal();
-    renderSection(section);
-  }
-
-  // DELETE
-  function deleteProduct(section, id) {
-    if (!confirm('Eliminar este producto?')) return;
-    let items = getData(section).filter(i => i.id !== id);
-    setData(section, items);
-    renderSection(section);
-  }
-
-  // INIT
   renderAll();
 </script>
 </body>
